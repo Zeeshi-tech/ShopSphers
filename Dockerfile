@@ -10,4 +10,4 @@ WORKDIR /app
 COPY --from=build /app .
 
 EXPOSE 10000
-ENTRYPOINT ["dotnet", "ShopSphere.dll"]
+ENTRYPOINT ["dotnet", "YOURPROJECTNAME.dll"]
