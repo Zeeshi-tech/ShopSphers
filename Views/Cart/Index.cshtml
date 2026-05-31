@@ -1,0 +1,111 @@
+﻿@model List<ShopSphere.Models.CartItem>
+@{
+    ViewData["Title"] = "Shopping Cart";
+}
+
+<div class="row mt-3 g-3">
+    <div class="col-lg-8">
+        <div class="white-card">
+            <h4 class="fw-bold border-bottom pb-3 mb-3">
+                <i class="fa fa-shopping-cart me-2" style="color:#f85606;"></i>
+                Shopping Cart <span class="text-muted fw-normal fs-6">(@Model.Count items)</span>
+            </h4>
+
+            @if (!Model.Any())
+            {
+                <div class="text-center py-5">
+                    <i class="fa fa-shopping-cart fa-5x mb-3" style="color:#ddd;"></i>
+                    <h5 class="fw-bold">Your cart is empty</h5>
+                    <p class="text-muted">Add products to your cart to continue shopping.</p>
+                    <a asp-controller="Product" asp-action="Index" class="btn btn-warning fw-bold px-4 py-2 mt-2">
+                        <i class="fa fa-shopping-bag me-2"></i>Start Shopping
+                    </a>
+                </div>
+            }
+            else
+            {
+                @foreach (var item in Model)
+                {
+                    <div class="cart-item">
+                        <img src="@item.ImageUrl" alt="@item.ProductName"
+                             onerror="this.src='https://via.placeholder.com/80?text=?'" />
+                        <div class="cart-item-info">
+                            <div class="cart-item-name">@item.ProductName</div>
+                            <div class="cart-item-price">Rs. @item.Price.ToString("N0") each</div>
+                            <form asp-controller="Cart" asp-action="UpdateQuantity" method="post" class="qty-form">
+                                <input type="hidden" name="id" value="@item.ProductId" />
+                                <button type="submit" name="quantity" value="@(item.Quantity - 1)">&#8722;</button>
+                                <span>@item.Quantity</span>
+                                <button type="submit" name="quantity" value="@(item.Quantity + 1)">+</button>
+                            </form>
+                        </div>
+                        <div class="d-flex flex-column align-items-end gap-2">
+                            <div class="cart-item-subtotal">Rs. @((item.Price * item.Quantity).ToString("N0"))</div>
+                            <a asp-controller="Cart" asp-action="Remove" asp-route-id="@item.ProductId"
+                               class="btn btn-sm btn-outline-danger">
+                                <i class="fa fa-trash me-1"></i>Remove
+                            </a>
+                        </div>
+                    </div>
+                }
+
+                <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
+                    <a asp-controller="Product" asp-action="Index" class="btn btn-outline-secondary">
+                        <i class="fa fa-arrow-left me-1"></i>Continue Shopping
+                    </a>
+                    <span class="text-muted small">
+                        <i class="fa fa-lock me-1 text-success"></i>Secure checkout guaranteed
+                    </span>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- ORDER SUMMARY -->
+    <div class="col-lg-4">
+        <div class="order-summary-box">
+            <h5>Order Summary</h5>
+            @{
+                decimal sub = Model.Sum(c => c.Price * c.Quantity);
+                decimal ship = sub >= 2000 ? 0 : 200;
+                decimal total = sub + ship;
+            }
+            <div class="summary-row">
+                <span>Subtotal (@Model.Sum(c => c.Quantity) items)</span>
+                <span>Rs. @sub.ToString("N0")</span>
+            </div>
+            <div class="summary-row">
+                <span>Delivery Fee</span>
+                <span class="@(ship == 0 ? "text-success fw-bold" : "")">
+                    @(ship == 0 ? "FREE" : "Rs. 200")
+                </span>
+            </div>
+            @if (ship > 0)
+            {
+                <div class="summary-row" style="font-size:11px;color:#888;">
+                    <span>Add Rs. @((2000 - sub).ToString("N0")) more for free delivery</span>
+                </div>
+            }
+            <div class="summary-row total">
+                <span>Total</span>
+                <span>Rs. @total.ToString("N0")</span>
+            </div>
+            @if (Model.Any())
+            {
+                <a asp-controller="Checkout" asp-action="Index" class="btn-checkout">
+                    <i class="fa fa-lock me-2"></i>Proceed to Checkout
+                </a>
+            }
+        </div>
+
+        <div class="white-card mt-3">
+            <div class="fw-bold small mb-2">Accepted Payment Methods</div>
+            <div>
+                <span class="pay-badge">💳 JazzCash</span>
+                <span class="pay-badge">💚 EasyPaisa</span>
+                <span class="pay-badge">💵 Cash on Delivery</span>
+            </div>
+        </div>
+    </div>
+</div>
+

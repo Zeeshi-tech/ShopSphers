@@ -1,0 +1,60 @@
+﻿@model IEnumerable<ShopSphere.Models.Order>
+<div class="white-card mt-3">
+    <h4 class="fw-bold border-bottom pb-2 mb-3">
+        <i class="fa fa-box me-2" style="color:#f85606;"></i>Mere Orders
+    </h4>
+    @if (!Model.Any())
+    {
+        <div class="text-center py-5">
+            <i class="fa fa-box fa-5x mb-3" style="color:#ddd;"></i>
+            <h5>Abhi tak koi order nahi</h5>
+            <a asp-controller="Product" asp-action="Index" class="btn btn-warning fw-bold">Shopping Shuru Karo</a>
+        </div>
+    }
+    else
+    {
+        @foreach (var order in Model)
+        {
+            <div class="cart-row mb-3">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h6 class="fw-bold mb-1">@order.OrderNumber</h6>
+                        <small class="text-muted">@order.OrderDate.ToString("dd MMM yyyy, hh:mm tt")</small>
+                    </div>
+                    <div class="text-end">
+                        <span class="badge b-@order.OrderStatus.ToLower() d-block mb-1">@order.OrderStatus</span>
+                        <span class="fw-bold text-danger">Rs.@order.TotalAmount.ToString("N0")</span>
+                    </div>
+                </div>
+                <div class="row mt-2 mb-2">
+                    <div class="col-md-4 small"><strong>Payment:</strong> @order.PaymentMethod</div>
+                    <div class="col-md-4 small"><strong>Payment Status:</strong> @order.PaymentStatus</div>
+                    @if (!string.IsNullOrEmpty(order.TransactionId))
+                    {
+                        <div class="col-md-4 small"><strong>TxID:</strong> @order.TransactionId</div>
+                    }
+                </div>
+                @{
+                    var steps = new[] { "Pending", "Processing", "Shipped", "Delivered" };
+                    int cur = Array.IndexOf(steps, order.OrderStatus);
+                }
+                <div class="d-flex align-items-center">
+                    @for (int i = 0; i < steps.Length; i++)
+                    {
+                        <div class="text-center" style="flex:1;">
+                            <div style="font-size:@(i <= cur ? "20px" : "15px");opacity:@(i <= cur ? "1" : "0.3");">
+                                @(new[] { "ðŸ•", "âš™ï¸", "ðŸšš", "âœ…" }[i])
+                            </div>
+                            <small class="@(i == cur ? "fw-bold text-danger" : "text-muted")" style="font-size:10px;">@steps[i]</small>
+                        </div>
+                        @if (i < steps.Length - 1)
+                        {
+                            <div style="flex:1;height:2px;background:@(i < cur ? "#28a745" : "#ddd");margin-bottom:18px;"></div>
+                        }
+                    }
+                </div>
+            </div>
+        }
+    }
+</div>
+

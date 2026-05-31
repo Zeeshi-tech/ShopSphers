@@ -1,0 +1,26 @@
+﻿@model ShopSphere.Models.Order
+@{
+    ViewData["Title"] = "JazzCash Payment";
+}
+<div class="payment-page-card jazzcash">
+    <div style="font-size:52px;">💳</div>
+    <h4 class="fw-bold mt-2">JazzCash Payment</h4>
+    <p class="mb-0 opacity-75">
+        @Model.OrderNumber — @Model.FullName
+    </p>
+    <div class="payment-amount">Rs. @Model.TotalAmount.ToString("N0")</div>
+    <p class="mb-1 small opacity-80">Send payment to this number:</p>
+    <div class="payment-number-box">0300-1234567</div>
+    <p class="small opacity-75">JazzCash Merchant Account: ShopSphere Official</p>
+    <form asp-action="ConfirmJazzCash" method="post" class="mt-3">
+        <input type="hidden" name="orderId" value="@Model.Id" />
+        <p class="fw-bold small mb-2">Enter Transaction ID from JazzCash SMS:</p>
+        <input name="transactionId" class="payment-txn-input" placeholder="e.g. T202600XXXXX" required />
+        <button type="submit" class="btn btn-light fw-bold w-100 py-3 mt-1">
+            &#10003; Confirm Payment
+        </button>
+    </form>
+    <div class="mt-3 small opacity-75">
+        <i class="fa fa-info-circle me-1"></i>Send payment first, then enter your Transaction ID above.
+    </div>
+</div>

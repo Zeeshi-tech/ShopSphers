@@ -1,0 +1,106 @@
+﻿@model IEnumerable<ShopSphere.Models.CartItem>
+
+<div class="container mt-5">
+
+    <h2 class="fw-bold mb-4">
+
+        Checkout
+
+    </h2>
+
+    <table class="table table-bordered">
+
+        <thead class="table-dark">
+
+            <tr>
+
+                <th>Product</th>
+                <th>Price</th>
+                <th>Qty</th>
+                <th>Total</th>
+
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            @{
+                decimal grandTotal = 0;
+            }
+
+            @foreach (var item in Model)
+            {
+                decimal total =
+                    item.Price
+                    * item.Quantity;
+
+                grandTotal += total;
+
+                <tr>
+
+                    <td>@item.ProductName</td>
+
+                    <td>
+                        Rs. @item.Price
+                    </td>
+
+                    <td>@item.Quantity</td>
+
+                    <td>
+                        Rs. @total
+                    </td>
+
+                </tr>
+            }
+
+        </tbody>
+
+    </table>
+
+    <h3 class="text-danger fw-bold">
+
+        Grand Total:
+        Rs. @grandTotal
+
+    </h3>
+
+    <form asp-action="PlaceOrder"
+          method="post">
+
+        <div class="mt-4">
+
+            <label class="fw-bold mb-2">
+
+                Select Payment Method
+
+            </label>
+
+            <select name="paymentMethod"
+                    class="form-select">
+
+                <option value="JazzCash">
+                    JazzCash
+                </option>
+
+                <option value="EasyPaisa">
+                    EasyPaisa
+                </option>
+
+                <option value="Cash On Delivery">
+                    Cash On Delivery
+                </option>
+
+            </select>
+
+        </div>
+
+        <button class="btn btn-success btn-lg mt-4">
+
+            Confirm Order
+
+        </button>
+
+    </form>
+
+</div>

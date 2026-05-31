@@ -1,0 +1,150 @@
+﻿@model IEnumerable<ShopSphere.Models.Product>
+@{
+    ViewData["Title"] = "Home";
+}
+
+<!-- HERO -->
+<div class="hero-banner mt-3">
+    <div class="row align-items-center">
+        <div class="col-md-7">
+            <div class="hero-badge">🔥 MEGA SALE &mdash; Up to 70% OFF</div>
+            <h1 class="fw-bold display-4 mb-3">Pakistan's #1 Online Shopping Store</h1>
+            <p class="lead mb-4" style="opacity:.88;">Mobiles, Electronics, Fashion, Watches & More — Delivered to your doorstep</p>
+            <div class="d-flex gap-3 flex-wrap">
+                <a asp-controller="Product" asp-action="Index" class="btn-hero">
+                    <i class="fa fa-shopping-bag me-2"></i>Shop Now
+                </a>
+                <a asp-controller="Product" asp-action="Index" asp-route-category="Mobiles"
+                   class="btn btn-outline-light px-4 py-2 fw-bold">View Mobiles</a>
+            </div>
+            <div class="hero-stats">
+                <div><div class="num">50K+</div><small>Products</small></div>
+                <div><div class="num">1M+</div><small>Customers</small></div>
+                <div><div class="num">COD</div><small>Available</small></div>
+                <div><div class="num">Free</div><small>Returns</small></div>
+            </div>
+        </div>
+        <div class="col-md-5 text-center d-none d-md-block">
+            <img src="https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=520"
+                 class="img-fluid rounded-4 shadow-lg" style="max-height:340px;object-fit:cover;" />
+        </div>
+    </div>
+</div>
+
+<!-- FEATURE STRIP -->
+<div class="feature-strip">
+    <div class="feature-item">
+        <div class="feature-icon">🚚</div>
+        <div>
+            <strong>Free Delivery</strong>
+            <small>Orders above Rs. 2,000</small>
+        </div>
+    </div>
+
+    <div class="feature-item">
+        <div class="feature-icon">💵</div>
+        <div>
+            <strong>Cash on Delivery</strong>
+            <small>Pay when you receive</small>
+        </div>
+    </div>
+
+    <div class="feature-item">
+        <div class="feature-icon">🔄</div>
+        <div>
+            <strong>7-Day Returns</strong>
+            <small>Easy return policy</small>
+        </div>
+    </div>
+</div>
+    
+
+<!-- CATEGORIES -->
+<div class="white-card">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="fw-bold mb-0">Shop by Category</h5>
+        <a asp-controller="Product" asp-action="Index" style="color:#f85606;font-size:13px;font-weight:700;">View All &rarr;</a>
+    </div>
+    <div class="row g-2">
+        @foreach (var c in new[] {
+            ("Mobiles","📱","500+ Products"),("Electronics","💻","1,200+ Products"),
+            ("Laptops","🖥️","300+ Products"),("Fashion","👟","800+ Products"),
+            ("Clothing","👗","600+ Products"),("Accessories","🎧","700+ Products"),
+            ("Watches","⌚","400+ Products"),("Home Appliances","🏠","350+ Products"),
+            ("Sports","⚽","250+ Products"),("Beauty","💄","200+ Products"),
+            ("Books","📚","150+ Products"),("Toys","🧸","180+ Products")
+        })
+        {
+            <div class="col-lg-2 col-md-3 col-4">
+                <a asp-controller="Product" asp-action="Index" asp-route-category="@c.Item1" class="cat-box-link">
+                    <div class="cat-box">
+                        <div class="cat-icon">@c.Item2</div>
+                        <div class="cat-name">@c.Item1</div>
+                        <div class="cat-count">@c.Item3</div>
+                    </div>
+                </a>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- TRENDING PRODUCTS -->
+<div class="section-head">
+    <h5 class="section-title"><i class="fa fa-bolt me-2" style="color:#f0a500;"></i>Trending Products</h5>
+    <a asp-controller="Product" asp-action="Index" class="btn btn-sm btn-outline-danger fw-bold">See All</a>
+</div>
+<div class="section-body">
+    <div class="row g-3">
+        @foreach (var item in Model)
+        {
+            <div class="col-xl-2 col-lg-3 col-md-4 col-6">
+                <div class="product-card">
+                    <button class="wishlist-btn" title="Add to Wishlist">&#9829;</button>
+                    @if (item.OriginalPrice > item.Price)
+                    {
+                        <div style="position:absolute;top:8px;left:8px;z-index:2;">
+                            <span class="p-disc">-@((int)(100 - (item.Price / item.OriginalPrice * 100)))%</span>
+                        </div>
+                    }
+                    <a asp-controller="Product" asp-action="Details" asp-route-id="@item.Id">
+                        <img src="@item.ImageUrl" class="p-img" alt="@item.Name"
+                             onerror="this.src='https://via.placeholder.com/300x200?text=No+Image'" />
+                    </a>
+                    <div class="p-body">
+                        <div class="p-cat">@item.Category</div>
+                        <div class="p-name">@item.Name</div>
+                        <div class="p-stars">
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                <i class="fa fa-star@(i <= (int)item.Rating ? "" : "-o")"></i>
+                            }
+                            <span>(@item.Rating.ToString("F1"))</span>
+                        </div>
+                        <div>
+                            <span class="p-price">Rs. @item.Price.ToString("N0")</span>
+                            @if (item.OriginalPrice > item.Price)
+                            {
+                                <span class="p-orig">@item.OriginalPrice.ToString("N0")</span>
+                            }
+                        </div>
+                        <div class="p-seller">by @item.SellerName</div>
+                        @if (item.Stock > 0 && item.Stock <= 10)
+                        {
+                            <div class="stock-badge-low">Only @item.Stock left!</div>
+                        }
+                        @if (item.Stock == 0)
+                        {
+                            <button class="btn-add-cart" style="background:#bbb;" disabled>Out of Stock</button>
+                        }
+                        else
+                        {
+                            <a asp-controller="Cart" asp-action="AddToCart" asp-route-id="@item.Id" class="btn-add-cart">
+                                <i class="fa fa-cart-plus me-1"></i>Add to Cart
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

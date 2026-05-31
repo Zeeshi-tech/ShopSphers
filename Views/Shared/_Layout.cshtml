@@ -1,0 +1,192 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - ShopSphere</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+</head>
+<body>
+
+    <!-- TOP BAR -->
+    <div class="topbar">
+        Free Delivery on Orders Above Rs. 2,000 &nbsp;|&nbsp;
+        Easy Returns & Refunds &nbsp;|&nbsp;
+        Trusted Online Shopping
+    </div>
+
+    <!-- MAIN NAVBAR -->
+    <nav class="main-navbar">
+        <div class="container">
+            <div class="navbar-inner">
+                <a class="brand" asp-controller="Home" asp-action="Index">
+                    Shop<span>Sphere</span>
+                </a>
+                <div class="search-wrap">
+                    <form asp-controller="Product" asp-action="Index" method="get">
+                        <div class="input-group">
+                            <input class="search-input form-control" type="search" name="search"
+                                   placeholder="Search products, brands, categories..." />
+                            <button class="btn-search" type="submit">
+                                <i class="fa fa-search"></i> Search
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <div class="nav-actions">
+                    <a class="cart-link" asp-controller="Cart" asp-action="Index" title="Cart">
+                        <i class="fa fa-shopping-cart"></i>
+                        <span class="cart-badge d-none" id="cartBadge">0</span>
+                    </a>
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <div class="dropdown">
+                            <a class="btn btn-sm btn-outline-light dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                                <i class="fa fa-user me-1"></i>@User.Identity.Name
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end shadow">
+                                <li>
+                                    <a class="dropdown-item" asp-controller="Order" asp-action="MyOrders">
+                                        <i class="fa fa-box me-2 text-warning"></i>My Orders
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <form asp-area="Identity" asp-page="/Account/Logout" method="post">
+                                        <button type="submit" class="dropdown-item text-danger">
+                                            <i class="fa fa-sign-out-alt me-2"></i>Logout
+                                        </button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
+                    }
+                    else
+                    {
+                        <a class="btn btn-sm btn-outline-light" asp-area="Identity" asp-page="/Account/Login">Login</a>
+                        <a class="btn btn-sm btn-warning fw-bold" asp-area="Identity" asp-page="/Account/Register">Sign Up</a>
+                    }
+                    @if (User.Identity?.Name == "admin@shopsphere.pk" || User.IsInRole("Admin"))
+                    {
+                        <a class="btn btn-sm btn-danger" asp-controller="Admin" asp-action="Index">
+                            <i class="fa fa-cog"></i> Admin
+                        </a>
+                    }
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- CATEGORY BAR -->
+    <div class="cat-bar">
+        <div class="container">
+            <div class="cat-bar-inner">
+                @foreach (var c in new[] { ("Mobiles", "📱"), ("Electronics", "💻"), ("Laptops", "🖥️"), ("Fashion", "👟"), ("Clothing", "👗"), ("Accessories", "🎧"), ("Watches", "⌚"), ("Home Appliances", "🏠"), ("Sports", "⚽"), ("Beauty", "💄"), ("Books", "📚"), ("Toys", "🧸") })
+                {
+                    <a asp-controller="Product" asp-action="Index" asp-route-category="@c.Item1" class="cat-pill">
+                        @c.Item2 @c.Item1
+                    </a>
+                }
+                <a asp-controller="Product" asp-action="Index" class="cat-pill hot">🔥 Flash Sale</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ALERTS -->
+    @if (TempData["Success"] != null)
+    {
+        <div class="container">
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="fa fa-check-circle me-2"></i>@TempData["Success"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        </div>
+    }
+    @if (TempData["CartMsg"] != null)
+    {
+        <div class="container">
+            <div class="alert alert-info alert-dismissible fade show" role="alert">
+                <i class="fa fa-cart-plus me-2"></i>@TempData["CartMsg"]
+                &nbsp;<a asp-controller="Cart" asp-action="Index" class="btn btn-sm btn-warning fw-bold">View Cart</a>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        </div>
+    }
+
+    <!-- PAGE CONTENT -->
+    <div class="container-fluid px-4 pb-5">
+        @RenderBody()
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="row">
+
+                <div class="col-lg-4 mb-4">
+                    <h4 class="footer-logo">
+                        Shop<span>Sphere</span>
+                    </h4>
+
+                    <p class="footer-text">
+                        Modern online shopping platform with thousands of products
+                        across mobiles, electronics, fashion, beauty, books and more.
+                    </p>
+                </div>
+
+                <div class="col-lg-2 col-md-4 mb-4">
+                    <h5 class="footer-title">Categories</h5>
+
+                    <a asp-controller="Product" asp-action="Index" asp-route-category="Mobiles" class="footer-link">Mobiles</a>
+                    <a asp-controller="Product" asp-action="Index" asp-route-category="Electronics" class="footer-link">Electronics</a>
+                    <a asp-controller="Product" asp-action="Index" asp-route-category="Fashion" class="footer-link">Fashion</a>
+                    <a asp-controller="Product" asp-action="Index" asp-route-category="Watches" class="footer-link">Watches</a>
+                </div>
+
+                <div class="col-lg-3 col-md-4 mb-4">
+                    <h5 class="footer-title">Customer Care</h5>
+
+                    <a href="#" class="footer-link">Help Center</a>
+                    <a href="#" class="footer-link">Track Orders</a>
+                    <a href="#" class="footer-link">Returns & Refunds</a>
+                    <a href="#" class="footer-link">Terms & Conditions</a>
+                </div>
+
+                <div class="col-lg-3 col-md-4 mb-4">
+                    <h5 class="footer-title">Contact</h5>
+
+                    <p class="footer-contact">
+                        <i class="fa fa-phone"></i>
+                        0336-1306640
+                    </p>
+
+                    <p class="footer-contact">
+                        <i class="fa fa-envelope"></i>
+                        muhammadzeeshanumar971@gmail.com
+                    </p>
+                </div>
+
+            </div>
+
+            <hr class="footer-line">
+
+            <div class="footer-bottom">
+                © 2026 ShopSphere. All Rights Reserved.
+            </div>
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        $.get('/Cart/Count', function(n) {
+        if (n > 0) { $('#cartBadge').text(n).removeClass('d-none'); }
+        });
+    </script>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>
+
+

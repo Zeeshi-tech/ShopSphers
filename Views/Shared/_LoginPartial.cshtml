@@ -1,0 +1,67 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using ShopSphere.Models
+
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+<ul class="navbar-nav">
+
+    @if (SignInManager.IsSignedIn(User))
+    {
+        <li class="nav-item">
+
+            <a class="nav-link text-light"
+               href="#">
+
+                Hello @User.Identity?.Name
+
+            </a>
+
+        </li>
+
+        <li class="nav-item">
+
+            <form method="post"
+                  asp-area="Identity"
+                  asp-page="/Account/Logout">
+
+                <button type="submit"
+                        class="btn btn-link nav-link text-light">
+
+                    Logout
+
+                </button>
+
+            </form>
+
+        </li>
+    }
+    else
+    {
+        <li class="nav-item">
+
+            <a class="nav-link text-light"
+               asp-area="Identity"
+               asp-page="/Account/Login">
+
+                Login
+
+            </a>
+
+        </li>
+
+        <li class="nav-item">
+
+            <a class="nav-link text-light"
+               asp-area="Identity"
+               asp-page="/Account/Register">
+
+                Register
+
+            </a>
+
+        </li>
+    }
+
+</ul>
+

@@ -1,0 +1,107 @@
+﻿@model IEnumerable<ShopSphere.Models.Order>
+
+<div class="container mt-5">
+
+    <h2 class="mb-4">
+        My Orders
+    </h2>
+
+    @foreach (var order in Model)
+    {
+        <div class="card shadow mb-4">
+
+            <div class="card-body">
+
+                <div class="row">
+
+                    <div class="col-md-8">
+
+                        <h5>
+                            Order #@order.Id
+                        </h5>
+
+                        <p>
+                            <strong>Name:</strong>
+                            @order.FullName
+                        </p>
+
+                        <p>
+                            <strong>Address:</strong>
+                            @order.Address
+                        </p>
+
+                        <p>
+                            <strong>Phone:</strong>
+                            @order.PhoneNumber
+                        </p>
+
+                        <p>
+                            <strong>Payment:</strong>
+                            @order.PaymentMethod
+                        </p>
+
+                        <p>
+                            <strong>Status:</strong>
+
+                            <span class="badge bg-success">
+                                @order.PaymentStatus
+                            </span>
+                        </p>
+
+                    </div>
+
+                    <div class="col-md-4 text-end">
+
+                        <h4 class="text-danger">
+
+                            Rs. @order.TotalAmount
+
+                        </h4>
+
+                    </div>
+
+                </div>
+
+                <hr />
+
+                <h5>
+                    Products
+                </h5>
+
+                @foreach (var item in order.OrderItems)
+                {
+                    <div class="d-flex align-items-center mb-3">
+
+                        <img src="@item.Product.ImageUrl"
+                             width="80"
+                             height="80"
+                             class="rounded me-3"
+                             style="object-fit:cover;" />
+
+                        <div>
+
+                            <h6>
+                                @item.Product.Name
+                            </h6>
+
+                            <p class="mb-0">
+                                Qty:
+                                @item.Quantity
+                            </p>
+
+                            <p class="mb-0">
+                                Rs.
+                                @item.Price
+                            </p>
+
+                        </div>
+
+                    </div>
+                }
+
+            </div>
+
+        </div>
+    }
+
+</div>

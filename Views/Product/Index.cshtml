@@ -1,0 +1,133 @@
+﻿@model IEnumerable<ShopSphere.Models.Product>
+@{
+    ViewData["Title"] = ViewBag.Category ?? "All Products";
+}
+
+<div class="row g-3 mt-2">
+    <!-- SIDEBAR FILTER -->
+    <div class="col-md-2 d-none d-md-block">
+        <div class="filter-sidebar">
+            <div class="filter-title">Filter Products</div>
+            <div class="filter-group">
+                <div class="filter-group-label">Category</div>
+                @foreach (var c in new[] { "Mobiles", "Electronics", "Laptops", "Fashion", "Clothing", "Accessories", "Watches", "Home Appliances", "Sports", "Beauty", "Books", "Toys" })
+                {
+                    <a asp-controller="Product" asp-action="Index"
+                       asp-route-category="@c" asp-route-search="@ViewBag.Search"
+                       class="f-link @(ViewBag.Category == c ? "active" : "")">@c</a>
+                }
+                <a asp-controller="Product" asp-action="Index" asp-route-search="@ViewBag.Search"
+                   class="f-link @(ViewBag.Category == null ? "active" : "")">All Categories</a>
+            </div>
+            <div class="filter-group">
+                <div class="filter-group-label">Sort By</div>
+                @foreach (var s in new[] { ("newest", "Newest First"), ("price_asc", "Price: Low to High"), ("price_desc", "Price: High to Low"), ("rating", "Best Rated") })
+                {
+                    <a asp-controller="Product" asp-action="Index"
+                       asp-route-sort="@s.Item1" asp-route-category="@ViewBag.Category" asp-route-search="@ViewBag.Search"
+                       class="f-link @(ViewBag.Sort == s.Item1 ? "active" : "")">@s.Item2</a>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- PRODUCTS -->
+    <div class="col-md-10 col-12">
+        <div class="white-card d-flex justify-content-between align-items-center py-2 mb-2">
+            <div>
+                <span class="fw-bold fs-5">@(ViewBag.Category ?? "All Products")</span>
+                @if (ViewBag.Search != null)
+                {
+                    <span class="text-muted ms-2 fw-normal fs-6">&mdash; "@ViewBag.Search"</span>
+                }
+                <span class="text-muted ms-2 small">(@ViewBag.TotalItems products found)</span>
+            </div>
+            <a asp-controller="Product" asp-action="Create" class="btn btn-sm btn-warning fw-bold">
+                <i class="fa fa-plus me-1"></i>Add Product
+            </a>
+        </div>
+
+        @if (!Model.Any())
+        {
+            <div class="white-card text-center py-5">
+                <i class="fa fa-search fa-4x mb-3" style="color:#ddd;"></i>
+                <h5>No products found</h5>
+                <p class="text-muted">Try a different category or search term</p>
+                <a asp-controller="Product" asp-action="Index" class="btn btn-warning fw-bold">Browse All Products</a>
+            </div>
+        }
+        else
+        {
+            <div class="row g-3">
+                @foreach (var item in Model)
+                {
+                    <div class="col-xl-2 col-lg-3 col-md-4 col-6">
+                        <div class="product-card">
+                            <button class="wishlist-btn" title="Wishlist">&#9829;</button>
+                            @if (item.OriginalPrice > item.Price)
+                            {
+                                <div style="position:absolute;top:8px;left:8px;z-index:2;">
+                                    <span class="p-disc">-@((int)(100 - (item.Price / item.OriginalPrice * 100)))%</span>
+                                </div>
+                            }
+                            <a asp-controller="Product" asp-action="Details" asp-route-id="@item.Id">
+                                <img src="@item.ImageUrl" class="p-img" alt="@item.Name"
+                                     onerror="this.src='https://via.placeholder.com/300x200?text=No+Image'" />
+                            </a>
+                            <div class="p-body">
+                                <div class="p-cat">@item.Category</div>
+                                <div class="p-name">@item.Name</div>
+                                <div class="p-stars">
+                                    @for (int i = 1; i <= 5; i++)
+                                    {
+                                        <i class="fa fa-star@(i <= (int)item.Rating ? "" : "-o")"></i>
+                                    }
+                                    <span>(@item.Rating.ToString("F1"))</span>
+                                </div>
+                                <div>
+                                    <span class="p-price">Rs. @item.Price.ToString("N0")</span>
+                                    @if (item.OriginalPrice > item.Price)
+                                    {
+                                        <span class="p-orig">@item.OriginalPrice.ToString("N0")</span>
+                                    }
+                                </div>
+                                <div class="p-seller">by @item.SellerName</div>
+                                @if (item.Stock > 0 && item.Stock <= 10)
+                                {
+                                    <div class="stock-badge-low">Only @item.Stock left!</div>
+                                }
+                                @if (item.Stock == 0)
+                                {
+                                    <button class="btn-add-cart" style="background:#bbb;" disabled>Out of Stock</button>
+                                }
+                                else
+                                {
+                                    <a asp-controller="Cart" asp-action="AddToCart" asp-route-id="@item.Id" class="btn-add-cart">
+                                        <i class="fa fa-cart-plus me-1"></i>Add to Cart
+                                    </a>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            @if ((ViewBag.TotalPages ?? 0) > 1)
+            {
+                <nav class="mt-4">
+                    <ul class="pagination justify-content-center flex-wrap">
+                        @for (int i = 1; i <= (int)ViewBag.TotalPages; i++)
+                        {
+                            <li class="page-item @(i == (int)ViewBag.CurrentPage ? "active" : "")">
+                                <a class="page-link"
+                                   asp-controller="Product" asp-action="Index"
+                                   asp-route-page="@i" asp-route-category="@ViewBag.Category"
+                                   asp-route-search="@ViewBag.Search" asp-route-sort="@ViewBag.Sort">@i</a>
+                            </li>
+                        }
+                    </ul>
+                </nav>
+            }
+        }
+    </div>
+</div>

@@ -1,0 +1,132 @@
+﻿@model List<ShopSphere.Models.CartItem>
+@{
+    ViewData["Title"] = "Checkout";
+}
+
+<div class="row mt-3 g-3">
+    <div class="col-md-7">
+        <div class="checkout-card">
+            <h4 class="fw-bold mb-4">
+                <i class="fa fa-lock me-2" style="color:#f85606;"></i>Secure Checkout
+            </h4>
+            <form asp-action="PlaceOrder" method="post">
+                <div class="checkout-section-title">
+                    <i class="fa fa-map-marker me-2"></i>Delivery Information
+                </div>
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <label class="fw-semibold small">Full Name *</label>
+                        <input name="fullName" class="form-control" placeholder="e.g. Muhammad Ali" required />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="fw-semibold small">Phone Number *</label>
+                        <input name="phoneNumber" class="form-control" placeholder="03XX-XXXXXXX" required />
+                    </div>
+                    <div class="col-12">
+                        <label class="fw-semibold small">Complete Address *</label>
+                        <textarea name="address" class="form-control" rows="2"
+                                  placeholder="House No., Street, Area / Colony" required></textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="fw-semibold small">City *</label>
+                        <select name="city" class="form-control" required>
+                            <option value="">Select City</option>
+                            @foreach (var city in new[] { "Karachi", "Lahore", "Islamabad", "Rawalpindi", "Faisalabad", "Multan", "Peshawar", "Quetta", "Sialkot", "Gujranwala", "Hyderabad", "Sukkur", "Larkana", "Bahawalpur", "Sargodha" })
+                            {
+                                <option>@city</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="fw-semibold small">Postal Code</label>
+                        <input name="postalCode" class="form-control" placeholder="e.g. 75500" />
+                    </div>
+                </div>
+
+                <div class="checkout-section-title">
+                    <i class="fa fa-credit-card me-2"></i>Payment Method
+                </div>
+
+                <div class="pay-option active" onclick="selectPay('Cash On Delivery', this)">
+                    <div class="d-flex align-items-center gap-3">
+                        <input type="radio" name="paymentMethod" value="Cash On Delivery" id="cod" checked />
+                        <label for="cod" class="d-flex align-items-center gap-3 w-100">
+                            <span class="pay-option-icon">💵</span>
+                            <div>
+                                <div class="pay-option-name">Cash on Delivery</div>
+                                <div class="pay-option-desc">Pay in cash when your order arrives</div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="pay-option" onclick="selectPay('JazzCash', this)">
+                    <div class="d-flex align-items-center gap-3">
+                        <input type="radio" name="paymentMethod" value="JazzCash" id="jazz" />
+                        <label for="jazz" class="d-flex align-items-center gap-3 w-100">
+                            <span class="pay-option-icon">💳</span>
+                            <div>
+                                <div class="pay-option-name">JazzCash</div>
+                                <div class="pay-option-desc">Pay via your JazzCash mobile account</div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="pay-option" onclick="selectPay('EasyPaisa', this)">
+                    <div class="d-flex align-items-center gap-3">
+                        <input type="radio" name="paymentMethod" value="EasyPaisa" id="easy" />
+                        <label for="easy" class="d-flex align-items-center gap-3 w-100">
+                            <span class="pay-option-icon">💚</span>
+                            <div>
+                                <div class="pay-option-name">EasyPaisa</div>
+                                <div class="pay-option-desc">Pay via your EasyPaisa mobile account</div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-place-order">
+                    <i class="fa fa-lock me-2"></i>Place Order &mdash; Rs. @ViewBag.GrandTotal?.ToString("N0")
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="col-md-5">
+        <div class="order-summary-box">
+            <h5>Order Summary</h5>
+            @foreach (var item in Model)
+            {
+                <div class="checkout-item">
+                    <img src="@item.ImageUrl" alt="@item.ProductName"
+                         onerror="this.src='https://via.placeholder.com/42?text=?'" />
+                    <div class="flex-grow-1">
+                        <div class="checkout-item-name">@item.ProductName</div>
+                        <small class="text-muted">Qty: @item.Quantity</small>
+                    </div>
+                    <span class="fw-bold small">Rs. @((item.Price * item.Quantity).ToString("N0"))</span>
+                </div>
+            }
+            <div class="summary-row mt-3"><span>Subtotal</span><span>Rs. @ViewBag.Subtotal?.ToString("N0")</span></div>
+            <div class="summary-row">
+                <span>Delivery</span>
+                <span class="@((int)ViewBag.Shipping == 0 ? "text-success fw-bold" : "")">
+                    @((int)ViewBag.Shipping == 0 ? "FREE" : "Rs. 200")
+                </span>
+            </div>
+            <div class="summary-row total"><span>Total</span><span>Rs. @ViewBag.GrandTotal?.ToString("N0")</span></div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function selectPay(method, el) {
+            document.querySelectorAll('.pay-option').forEach(e => e.classList.remove('active'));
+            el.classList.add('active');
+            var ids = {'Cash On Delivery':'cod','JazzCash':'jazz','EasyPaisa':'easy'};
+            document.getElementById(ids[method]).checked = true;
+        }
+    </script>
+}
